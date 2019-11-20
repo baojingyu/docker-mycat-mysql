@@ -8,6 +8,36 @@
 - 采用2分片（2主4从）
 - Mycat读写分离
 
+
+
+**Mysql**:
+
+​	userName:root
+
+​	password:password
+
+
+
+**Mycat**:
+
+​	读写帐户:
+
+​		userName:root
+
+​		password:password
+
+​	只读帐户:
+
+​		userName:guest
+
+​		password:guest
+
+
+
+**项目下载地址**:
+
+​	https://github.com/baojingyu/docker-mycat-mysql.git
+
 ---
 
 #### 命令
@@ -806,4 +836,5 @@ log-bin=mysql-slave-bin
 change master to master_host='192.18.0.2', master_user='gokuit', master_password='gokuit', master_port=3306, master_log_file='mysql-bin.000003', master_log_pos= 154, master_connect_retry=30;
 
 ```
+
 
