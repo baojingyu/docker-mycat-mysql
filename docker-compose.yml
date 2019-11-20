@@ -1,0 +1,124 @@
+version: "3"
+services:
+  m1:
+    build: ./m1
+    container_name: m1
+    restart: always
+    volumes:
+      - ./m1/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./m1/data:/var/lib/mysql
+      - ./m1/logs:/var/log/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.2
+  s1:
+    build: ./s1
+    container_name: s1
+    restart: always
+    volumes:
+      - ./s1/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./s1/data:/var/lib/mysql
+      - ./s1/logs:/var/log/mysql
+    ports:
+      - "3308:3306"
+    depends_on:
+      - m1
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.3
+    links:
+      - m1
+  s2:
+    build: ./s2
+    container_name: s2
+    restart: always
+    volumes:
+      - ./s2/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./s2/data:/var/lib/mysql
+      - ./s2/logs:/var/log/mysql
+    ports:
+      - "3309:3306"
+    depends_on:
+      - m1
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.4
+    links:
+      - m1
+  m2:
+    build: ./m2
+    container_name: m2
+    volumes:
+    - ./m2/mysql/my.cnf:/etc/mysql/my.cnf
+    - ./m2/data:/var/lib/mysql
+    - ./m2/logs:/var/log/mysql
+    restart: always
+    ports:
+      - "3310:3306"
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.5
+  s3:
+    build: ./s3
+    container_name: s3
+    volumes:
+    - ./s3/mysql/my.cnf:/etc/mysql/my.cnf
+    - ./s3/mysql/data:/var/lib/mysql
+    - ./s3/logs:/var/log/mysql
+    restart: always
+    ports:
+    - "3311:3306"
+    depends_on:
+    - m2
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.6
+    links:
+    - m2
+  s4:
+    build: ./s4
+    container_name: s4
+    volumes:
+    - ./s4/mysql/my.cnf:/etc/mysql/my.cnf
+    - ./s4/mysql/data:/var/lib/mysql
+    - ./s4/logs:/var/log/mysql
+    restart: always
+    ports:
+    - "3312:3306"
+    depends_on:
+    - m2
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.7
+    links:
+    - m2
+  mycat:
+    build: ./mycat
+    container_name: mycat
+    restart: always
+    volumes:
+      - ./mycat/conf/server.xml:/home/mycat/conf/server.xml
+      - ./mycat/conf/schema.xml:/home/mycat/conf/schema.xml
+      - ./mycat/conf/rule.xml:/home/mycat/conf/rule.xml
+    ports:
+      - "8066:8066"
+      - "9066:9066"
+    links:
+      - m1
+      - s1
+      - s2
+      - m2
+      - s3
+      - s4
+    networks:
+      mysql:
+        ipv4_address: 192.18.0.8
+networks:
+  mysql:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.18.0.0/24

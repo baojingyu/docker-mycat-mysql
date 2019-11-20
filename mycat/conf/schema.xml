@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+    <!-- 定义MyCat的逻辑库 -->
+    <!-- 设置表的存储方式. schema name="test_db" 与 server.xml中的test_db 设置一致 -->
+    <schema name="test_db" checkSQLschema="false" sqlMaxLimit="100">
+        <table name="t_test" primaryKey="id" dataNode="dn1,dn2" rule="mod-long"></table>
+        <!--t_task_test表根据org_code列,进行一致性hash规则分片-->
+        <table name="t_task_test" dataNode="dn1,dn2" rule="sharding-by-murmur-orgcode"></table>
+    </schema>
+
+    <!-- 定义MyCat的数据节点(分片) -->
+    <!-- 设置dataNode 对应的数据库,及 mycat 连接的地址dataHost -->
+    <dataNode name="dn1" dataHost="dh1" database="test_db"/>
+    <dataNode name="dn2" dataHost="dh2" database="test_db"/>
+
+
+    <!-- mycat 逻辑主机dataHost对应的物理主机.其中也设置对应的mysql登陆信息 -->
+    <!-- 定义数据主机dtHost，连接到MySQL读写分离集群 ,schema中的每一个dataHost中的host属性值必须唯一-->
+    <!-- dataHost实际上配置就是后台的数据库集群，一个datahost代表一个数据库集群 -->
+    <!-- balance="1"，全部的readHost与stand by writeHost参与select语句的负载均衡-->
+    <!-- writeType="0"，所有写操作发送到配置的第一个writeHost，这里就是我们的hostmaster，第一个挂了切到还生存的第二个writeHost-->
+    <dataHost name="dh1" maxCon="1000" minCon="10" balance="1"
+              writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100">
+        <!--心跳检测 -->
+        <heartbeat>select user()</heartbeat>
+        <!--配置后台数据库的IP地址和端口号，还有账号密码 -->
+        <writeHost host="m1" url="192.18.0.2:3306" user="root" password="password">
+            <readHost host="s1" url="192.18.0.3:3306" user="root" password="password" />
+            <readHost host="s2" url="192.18.0.4:3306" user="root" password="password" />
+        </writeHost>
+    </dataHost>
+
+    <dataHost name="dh2" maxCon="1000" minCon="10" balance="1"
+              writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100">
+        <heartbeat>select user()</heartbeat>
+        <writeHost host="m2" url="192.18.0.5:3306" user="root" password="password">
+            <readHost host="s3" url="192.18.0.6:3306" user="root" password="password" />
+            <readHost host="s4" url="192.18.0.7:3306" user="root" password="password" />
+        </writeHost>
+    </dataHost>
+
+</mycat:schema>
