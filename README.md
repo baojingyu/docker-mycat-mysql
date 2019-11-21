@@ -737,9 +737,7 @@ Restarting m1    ... done
 ```
 
 ### Navicat连接Mycat
-
-![image-20191120231042166](/Users/baojingyu/Library/Application%20Support/typora-user-images/image-20191120231042166.png)
-
+![](https://raw.githubusercontent.com/baojingyu/ImageHosting/master/img/20191120231036.png)
 ```sql
 -- 连接mycat成功,在test_db库执行以下SQL语句
 CREATE TABLE IF NOT EXISTS t_test (
