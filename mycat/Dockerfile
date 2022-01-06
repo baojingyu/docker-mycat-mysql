@@ -9,7 +9,7 @@ ENV MYCAT_VERSION 1.6.7.3
 
 ENV MYCAT_HOME /home/mycat
 
-RUN curl http://dl.mycat.io/${MYCAT_VERSION}/20190927161129/Mycat-server-${MYCAT_VERSION}-release-20190927161129-linux.tar.gz -o mycat.tar.gz \
+RUN curl http://dl.mycat.org.cn//${MYCAT_VERSION}/20190927161129/Mycat-server-${MYCAT_VERSION}-release-20190927161129-linux.tar.gz -o mycat.tar.gz \
   && tar -zxf mycat.tar.gz \
   && rm -f mycat.tar.gz \
   && mv mycat /home/ \
